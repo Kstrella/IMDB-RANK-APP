@@ -109,3 +109,29 @@ main{
 .movie:hover .overview{
     transform:translateY(0)
 }
+
+#tags{
+    width:80%;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+}
+
+.tag{
+    color:white;
+    padding:10px 20px;
+    background-color: rgb(3, 62, 255);
+    border-radius: 20px;
+    margin:5px;
+    display:inline-block;
+    cursor: pointer;
+}
+
+.tag.highlight{
+    background-color:rgb(144, 63, 219);
+}
+.no-results{
+    color:white;
+}
