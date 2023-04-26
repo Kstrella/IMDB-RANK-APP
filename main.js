@@ -133,12 +133,15 @@ const genres = [
     })
   }
 
+
+
 //this function is used to higlight selected optiopns on genre and year
 function higlightSelection() {
     const tags = document.querySelectorAll('.tag');
     tags.forEach(tag => {
         tag.classList.remove('highlight');
     })
+   
     if(selectedGenre.length != 0){
     selectedGenre.forEach(id => {
         const higlightedTag = document.getElementById(id);
@@ -146,12 +149,21 @@ function higlightSelection() {
     })
 }
 }
+
+ //this function cleares selected generers
+
+
 getMovies(API_URL);
 function getMovies(url) {
 
     fetch(url).then(res => res.json()).then(data => {
         console.log(data.results)
-        showMovies(data.results);
+        if(data.results.length !== 0){
+            showMovies(data.results);
+        }else{
+            main.innerHTML= `<h1 class="no-results">No Results Found</h1>`
+        }
+        
     })
 
 }
@@ -165,7 +177,7 @@ function showMovies(data) {
         const movieEl = document.createElement('div');
         movieEl.classList.add('movie');
         movieEl.innerHTML = `
-             <img src="${IMG_URL+poster_path}" alt="${title}">
+             <img src="${poster_path? IMG_URL+poster_path: "https://eagle-sensors.com/wp-content/uploads/unavailable-image.jpg"}" alt="${title}">
             <div class="movie-info">
                 <h3>${title}</h3>
                 <span class="${getColor(vote_average)}">${vote_average}</span>
