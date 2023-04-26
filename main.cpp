@@ -389,11 +389,9 @@ int main() {
     switch (choice) {
         case 1: {
             cout << "What actor would you like to search? Input first name and then last name" << endl;
-            string one;
-            string two;
-            cin >> one;
-            cin >> two;
-            string actor = one + " " + two;
+            string actor;
+            cin >> ws;
+            std::getline(std::cin, actor);
             val = GetActorMovieRatings(actor);
             valTwo = val;
             auto beginQ = std::chrono::high_resolution_clock::now();
