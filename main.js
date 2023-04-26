@@ -9,9 +9,144 @@ const searchURL = BASE_URL + '/search/movie?'+API_KEY;
 const main = document.getElementById('main');
 const form =  document.getElementById('form');
 const search = document.getElementById('search');
+const tagEl = document.getElementById('tags');
 
+
+
+//the following is for the genres
+const genres = [
+    {
+      "id": 28,
+      "name": "Action"
+    },
+    {
+      "id": 12,
+      "name": "Adventure"
+    },
+    {
+      "id": 16,
+      "name": "Animation"
+    },
+    {
+      "id": 35,
+      "name": "Comedy"
+    },
+    {
+      "id": 80,
+      "name": "Crime"
+    },
+    {
+      "id": 99,
+      "name": "Documentary"
+    },
+    {
+      "id": 18,
+      "name": "Drama"
+    },
+    {
+      "id": 10751,
+      "name": "Family"
+    },
+    {
+      "id": 14,
+      "name": "Fantasy"
+    },
+    {
+      "id": 36,
+      "name": "History"
+    },
+    {
+      "id": 27,
+      "name": "Horror"
+    },
+    {
+      "id": 10402,
+      "name": "Music"
+    },
+    {
+      "id": 9648,
+      "name": "Mystery"
+    },
+    {
+      "id": 10749,
+      "name": "Romance"
+    },
+    {
+      "id": 878,
+      "name": "Science Fiction"
+    },
+    {
+      "id": 10770,
+      "name": "TV Movie"
+    },
+    {
+      "id": 53,
+      "name": "Thriller"
+    },
+    {
+      "id": 10752,
+      "name": "War"
+    },
+    {
+      "id": 37,
+      "name": "Western"
+    }
+  ]
+
+
+  var selectedGenre = [];
+  setGenre();
+
+  function setGenre(){
+    //sets tag based on input dynamically
+    tagEl.innerHTML = '';
+    genres.forEach(genre =>{
+        const t = document.createElement('div');
+        t.classList.add('tag')
+        t.id = genre.id;
+        t.innerText = genre.name;
+        t.addEventListener('click', () => {
+            //if we have an empty arry push the id
+            if(selectedGenre.length == 0){
+                selectedGenre.push(genre.id);
+            } else {
+                if(selectedGenre.includes(genre.id)){
+                    //If the genre has already been selected remove
+                    selectedGenre.forEach((id,idx) => {
+                        if(id == genre.id){
+                            selectedGenre.splice(idx,1);
+                        }
+                    })
+                } else {
+                    //if id doesnt exist we add it to array
+                    selectedGenre.push(genre.id);
+                }
+            }
+            console.log(selectedGenre)
+            //this part gets the genre from API  
+            getMovies(API_URL + '&with_genres='+encodeURI(selectedGenre.join(',')))
+            higlightSelection();
+        })
+        //get genre names to display
+        tagEl.append(t);
+    
+    })
+  }
+
+//this function is used to higlight selected optiopns on genre and year
+function higlightSelection() {
+    const tags = document.querySelectorAll('.tag');
+    tags.forEach(tag => {
+        tag.classList.remove('highlight');
+    })
+    if(selectedGenre.length != 0){
+    selectedGenre.forEach(id => {
+        const higlightedTag = document.getElementById(id);
+        higlightedTag.classList.add('highlight');
+    })
+}
+}
 getMovies(API_URL);
-
 function getMovies(url) {
 
     fetch(url).then(res => res.json()).then(data => {
@@ -21,7 +156,7 @@ function getMovies(url) {
 
 }
 
-
+//injecting API data into HTML elements
 function showMovies(data) {
     main.innerHTML = '';
 
@@ -46,7 +181,7 @@ function showMovies(data) {
     })
 }
 
-
+//rating color change
 function getColor(vote) {
     if(vote>= 8){
         return 'green'
