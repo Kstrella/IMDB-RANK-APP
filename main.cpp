@@ -13,15 +13,17 @@ int partition(vector<float>& arr, float low, float high);
 void quickSort(vector<float>& arr, float low, float high);
 void radixSort(vector<pair<string,float>>& test);
 vector<vector<string>> GetAllMovieData();
-vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieData);
+vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieData, int votes);
 vector<vector<string>> GetMovieDataByGenre(string genre);
 vector<pair<string, float>> GetActorMovieRatings(string actor);
 vector<pair<string,float>> GetGenreMovieRatings(string genre);
 vector<vector<string>> GetMovieDataByMovieIDs(unordered_set<string>& movieIDMap);
 unordered_set<string> GetMovieIDsByActor(string actorName);
 string GetActorID(string actorName);
-vector<pair<string, float>> GetRegionMovieRatings(string region);
-unordered_set<string> GetMovieIDsByRegion(string region);
+vector<pair<string, float>> GetRegionMovieRatings(string region, int votes);
+unordered_set<string> GetMovieIDsByRegion(string region, int votes);
+vector<pair<string, float>> GetYearMovieRatings(int year, int votes);
+unordered_set<string> GetMovieIDByYear(int year, int votes);
 
 
 
@@ -231,7 +233,7 @@ Only data from movies is considered.
     return outputVector;
 }
 
-vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieData)
+vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieData, int votes)
 {
     vector<pair<string, float>> outputVector;
     ifstream inputData("ratings.tsv");
@@ -250,10 +252,24 @@ vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieDa
             string keyString;
             string valueString;
 
-            // Obtain movie ID and rating
+            // Obtain movie ID, rating, and number of votes
             while (getline(stringToParse2, keyString, '\t')) {
                 getline(stringToParse2, valueString, '\t');
-                ratingMap[keyString] = stod(valueString);
+                string temp;
+                getline(stringToParse2, temp, '\t');
+
+                // Check for blank entry
+                if (temp != "\\N") {
+                    int curvotes = stoi(temp);
+
+                    // Only take in movie if at vote threshold
+                    if (votes <= curvotes) {
+                        ratingMap[keyString] = stod(valueString);
+                    }
+                }
+                else {
+                    break;
+                }
             }
         }
     }
@@ -319,13 +335,55 @@ unordered_set<string> GetMovieIDsByRegion(string region)
     return outputSet;
 }
 
-vector<pair<string,float>> GetActorMovieRatings(string actor)
+unordered_set<string> GetMovieIDByYear(int year) {
+    // Variables
+    ifstream inputData("title_basics.tsv");
+    unordered_set<string> outputSet;
+    string stringToParse;
+
+    // Check if file opened
+    if (inputData.is_open()) {
+        cout << "File opened. Parsing..." << endl;
+
+        // Dump header
+        getline(inputData, stringToParse);
+        while (getline(inputData, stringToParse)) {
+            istringstream stringToParse2(stringToParse);
+            string movieID;
+
+            // Parse line
+            // Movie year at index 5
+            while (getline(stringToParse2, movieID, '\t')) {
+                string yearString;
+                for (int i = 0; i < 5; i++) {
+                    getline(stringToParse2, yearString, '\t');
+                }
+                //cout << yearString << endl;
+                if (yearString != "\\N") {
+                    int yearInt = stoi(yearString);
+                    if (year == yearInt) {
+                        outputSet.emplace(movieID);
+                    }
+                    break;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+    }
+    else { cout << "Error: File could not be opened." << endl; }
+
+    return outputSet;
+}
+
+vector<pair<string,float>> GetActorMovieRatings(string actor, int votes)
 {
     vector<pair<string, float>> outputVector;
     unordered_set<string> actorMap = GetMovieIDsByActor(actor);
     if (actorMap.size() != 0) {
         vector<vector<string>> movieVector = GetMovieDataByMovieIDs(actorMap);
-        outputVector = PairMoviesAndRatings(movieVector);
+        outputVector = PairMoviesAndRatings(movieVector, votes);
         cout << "All files parsed. Returning data..." << endl;
     }
     else {
@@ -334,12 +392,12 @@ vector<pair<string,float>> GetActorMovieRatings(string actor)
     return outputVector;
 }
 
-vector<pair<string,float>> GetGenreMovieRatings(string genre)
+vector<pair<string,float>> GetGenreMovieRatings(string genre, int votes)
 {
     vector<pair<string, float>> outputVector;
     vector<vector<string>> genreVector = GetMovieDataByGenre(genre);
     if (genreVector.size() != 0) {
-        outputVector = PairMoviesAndRatings(genreVector);
+        outputVector = PairMoviesAndRatings(genreVector, votes);
         cout << "All files parsed. Returning data..." << endl;
     }
     else {
@@ -348,14 +406,29 @@ vector<pair<string,float>> GetGenreMovieRatings(string genre)
     return outputVector;
 }
 
-vector<pair<string, float>> GetRegionMovieRatings(string region)
+vector<pair<string, float>> GetRegionMovieRatings(string region, int votes)
 {
     // Regions are 2 letter IDs (i.e. Germany = GR)
     vector<pair<string, float>> outputVector;
     unordered_set<string> regionMap = GetMovieIDsByRegion(region);
     if (regionMap.size() != 0) {
         vector<vector<string>> movieVector = GetMovieDataByMovieIDs(regionMap);
-        outputVector = PairMoviesAndRatings(movieVector);
+        outputVector = PairMoviesAndRatings(movieVector, votes);
+        cout << "All files parsed. Returning data..." << endl;
+    }
+    else {
+        cout << "Error: No movies found for given query." << endl;
+    }
+    return outputVector;
+}
+
+vector<pair<string, float>> GetYearMovieRatings(int year, int votes) {
+    // Yep years
+    vector<pair<string, float>> outputVector;
+    unordered_set<string> regionMap = GetMovieIDByYear(year);
+    if (regionMap.size() != 0) {
+        vector<vector<string>> movieVector = GetMovieDataByMovieIDs(regionMap);
+        outputVector = PairMoviesAndRatings(movieVector, votes);
         cout << "All files parsed. Returning data..." << endl;
     }
     else {
@@ -401,7 +474,12 @@ int main() {
             string actor;
             cin >> ws;
             std::getline(std::cin, actor);
-            val = GetActorMovieRatings(actor);
+            cout << endl;
+            cout << "Minimum votes to filter by?";
+            int min;
+            cin >> min;
+            cout << endl;
+            val = GetActorMovieRatings(actor, min);
             valTwo = val;
             auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
@@ -418,9 +496,9 @@ int main() {
             cout << "Input number: ";
             cin >> either;
             cout << endl;
-            cout << endl;
             int rankOne;
             if (either == 1) {
+                cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
                 rankOne = 1;
@@ -432,6 +510,7 @@ int main() {
             else {
                 cout << "How many movies do you want to see? (1 - 10)";
                 cin >> choice;
+                cout << endl;
                 cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
@@ -447,7 +526,12 @@ int main() {
             cout << "What Genre would you like to search?";
             string names;
             cin >> names;
-            val = GetGenreMovieRatings(names);
+            cout << endl;
+            cout << "Minimum votes to filter by?";
+            int min;
+            cin >> min;
+            cout << endl;
+            val = GetGenreMovieRatings(names, min);
             valTwo = val;
             auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
@@ -464,9 +548,9 @@ int main() {
             cout << "Input number: ";
             cin >> either;
             cout << endl;
-            cout << endl;
             int rankTwo;
             if (either == 1) {
+                cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
                 rankTwo = 1;
@@ -478,6 +562,7 @@ int main() {
             else {
                 cout << "How many movies do you want to see? (1 - 100)";
                 cin >> choice;
+                cout << endl;
                 cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
@@ -493,7 +578,12 @@ int main() {
             cout << "Which country would you like to search?";
             string country;
             cin >> country;
-            val = GetRegionMovieRatings(country);
+            cout << endl;
+            cout << "Minimum votes to filter by?";
+            int min;
+            cin >> min;
+            cout << endl;
+            val = GetRegionMovieRatings(country, min);
             valTwo = val;
             auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
@@ -510,9 +600,9 @@ int main() {
             cout << "Input number: ";
             cin >> either;
             cout << endl;
-            cout << endl;
             int rankThree;
             if (either == 1) {
+                cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
                 rankThree = 1;
@@ -525,6 +615,7 @@ int main() {
                 cout << "How many movies do you want to see? (1 - 100)";
                 cin >> choice;
                 cout << endl;
+                cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
                 rankThree = 1;
@@ -535,13 +626,16 @@ int main() {
             }
             break;
         }
-        /*
         case 4: {
             cout << "Which year would you like to search?";
             int year;
             cin >> year;
-            vector<pair<string, float>> valFour =
-            radixSort(valFour);
+            cout << endl;
+            cout << "Minimum votes to filter by?";
+            int min;
+            cin >> min;
+            cout << endl;
+            val = GetYearMovieRatings(year, min);
             valTwo = val;
             auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
@@ -557,14 +651,14 @@ int main() {
             cout << "Input number: ";
             cin >> either;
             cout << endl;
-            cout << endl;
             int rankFour;
             if (either == 1) {
+                cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
                 rankFour = 1;
-                for (int i = valFour.size() - 1; i >= 0; i--) {
-                    cout << rankFour << ". " << valFour[i].first << " " << valFour[i].second << endl;
+                for (int i = val.size() - 1; i >= 0; i--) {
+                    cout << rankFour << ". " << val[i].first << " " << val[i].second << endl;
                     rankFour++;
                 }
             }
@@ -572,16 +666,17 @@ int main() {
                 cout << "How many movies do you want to see? (1 - 100)";
                 cin >> choice;
                 cout << endl;
+                cout << endl;
                 cout << "--------------------- Your  Ratings --------------------" << endl;
                 cout << endl;
                 rankFour = 1;
-                for (int i = valFour.size() - 1; i > valFour.size() - choice - 1; i--) {
-                    cout << rankFour << ". " << valFour[i].first << " " << valFour[i].second << endl;
+                for (int i = val.size() - 1; i > val.size() - choice - 1; i--) {
+                    cout << rankFour << ". " << val[i].first << " " << val[i].second << endl;
                     rankFour++;
                 }
             }
             break;
-        }*/
+        }
     }
 
     cout << endl;
