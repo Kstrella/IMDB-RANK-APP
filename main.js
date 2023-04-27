@@ -2,7 +2,7 @@
 
 const API_KEY = 'api_key=fe6e90e8a90b5dba2e224b69ae1dbfef';
 const BASE_URL = 'https://api.themoviedb.org/3';
-const API_URL = BASE_URL + '/discover/movie?sort_by=popularity.desc&'+API_KEY;
+const API_URL = BASE_URL + '/discover/movie?with_genres=18&sort_by=vote_average.desc&vote_count.gte=10000&'+API_KEY;
 const IMG_URL = 'https://image.tmdb.org/t/p/w500';
 const searchURL = BASE_URL + '/search/movie?'+API_KEY;
 
@@ -34,10 +34,6 @@ const genres = [
     {
       "id": 80,
       "name": "Crime"
-    },
-    {
-      "id": 99,
-      "name": "Documentary"
     },
     {
       "id": 18,
@@ -74,10 +70,6 @@ const genres = [
     {
       "id": 878,
       "name": "Science Fiction"
-    },
-    {
-      "id": 10770,
-      "name": "TV Movie"
     },
     {
       "id": 53,
@@ -150,8 +142,6 @@ function higlightSelection() {
 }
 }
 
- //this function cleares selected generers
-
 
 getMovies(API_URL);
 function getMovies(url) {
@@ -210,6 +200,7 @@ form.addEventListener('submit', (e) => {
     const searchTerm = search.value;
 
     if(searchTerm) {
+        
         getMovies(searchURL+'&query='+searchTerm)
     }else{
         getMovies(API_URL);
