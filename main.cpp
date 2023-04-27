@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <chrono>
 using namespace std;
+using namespace std::chrono;
 
 int partition(vector<float>& arr, float low, float high);
 void quickSort(vector<float>& arr, float low, float high);
@@ -370,15 +371,24 @@ vector<pair<string, float>> GetRegionMovieRatings(string region)
 int main() {
 
     int choice;
-    cout << "Welcome to Movie Finder" << endl;
     cout << endl;
-    cout << "Which category you would like to search? Input a number between 1 and 4" << endl;
+    cout << endl;
+    cout << "*********************************************************" << endl;
+    cout << endl;
+    cout << "**************** Welcome to Movie Finder ****************" << endl;
+    cout << endl;
+    cout << "*********************************************************" << endl;
+    cout << endl;
+
+
+    cout << "Which category you would like to search?" << endl;
     cout << "1. Actor" << endl;
     cout << "2. Genre" << endl;
     cout << "3. Region" << endl;
     cout << "4. Year" << endl;
-    cin >> choice;
     cout << endl;
+    cout << "Input number:";
+    cin >> choice;
     cout << endl;
     int either;
     vector<pair<string, float>> val;
@@ -388,24 +398,32 @@ int main() {
 
     switch (choice) {
         case 1: {
-            cout << "What actor would you like to search? Input first name and then last name" << endl;
+            cout << "What actor would you like to search?";
             string actor;
             cin >> ws;
             std::getline(std::cin, actor);
             val = GetActorMovieRatings(actor);
             valTwo = val;
-            auto beginQ = std::chrono::high_resolution_clock::now();
+            auto beginQ = high_resolution_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
-            auto endQ = std::chrono::high_resolution_clock::now();
-            auto beginR = std::chrono::high_resolution_clock::now();
+            auto endQ = high_resolution_clock::now();
+            auto beginR = high_resolution_clock::now();
             radixSort(val);
-            auto endR = std::chrono::high_resolution_clock::now();
-            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
-            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
-            cout << "Input 1 for all ratings and 2 for select number" << endl;
+            auto endR = high_resolution_clock::now();
+            elapsedQ = duration_cast<microseconds>((endQ - beginQ)).count();
+            elapsedR = duration_cast<microseconds>((endR - beginR)).count();
+            cout << endl;
+            cout << "1. Output all ratings" << endl;
+            cout << "2. Output select number" << endl;
+            cout << endl;
+            cout << "Input number: ";
             cin >> either;
+            cout << endl;
+            cout << endl;
             int rankOne;
             if (either == 1) {
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankOne = 1;
                 for (int i = val.size() - 1; i >= 0; i--) {
                     cout << rankOne << ". " << val[i].first << " " << val[i].second << endl;
@@ -413,8 +431,11 @@ int main() {
                 }
             }
             else {
-                cout << "How many movies do you want to see? (1 - 10)" << endl;
+                cout << "How many movies do you want to see? (1 - 10)";
                 cin >> choice;
+                cout << endl;
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankOne = 1;
                 for (int i = val.size() - 1; i > val.size() - choice - 1; i--) {
                     cout << rankOne << ". " << val[i].first << " " << val[i].second << endl;
@@ -424,7 +445,7 @@ int main() {
             break;
         }
         case 2: {
-            cout << "What Genre would you like to search?" << endl;
+            cout << "What Genre would you like to search?";
             string names;
             cin >> names;
             val = GetGenreMovieRatings(names);
@@ -435,12 +456,20 @@ int main() {
             auto beginR = std::chrono::high_resolution_clock::now();
             radixSort(val);
             auto endR = std::chrono::high_resolution_clock::now();
-            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
-            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
-            cout << "Input 1 for all ratings and 2 for select number" << endl;
+            elapsedQ = std::chrono::duration_cast<std::chrono::milliseconds>((endQ - beginQ)).count();
+            elapsedR = std::chrono::duration_cast<std::chrono::milliseconds>((endR - beginR)).count();
+            cout << endl;
+            cout << "1. Output all ratings" << endl;
+            cout << "2. Output select number" << endl;
+            cout << endl;
+            cout << "Input number: ";
             cin >> either;
+            cout << endl;
+            cout << endl;
             int rankTwo;
             if (either == 1) {
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankTwo = 1;
                 for (int i = val.size() - 1; i >=0; i--) {
                     cout << rankTwo << ". " << val[i].first << " " << val[i].second << endl;
@@ -448,8 +477,11 @@ int main() {
                 }
             }
             else {
-                cout << "How many movies do you want to see? (1 - 100)" << endl;
+                cout << "How many movies do you want to see? (1 - 100)";
                 cin >> choice;
+                cout << endl;
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankTwo = 1;
                 for (int i = val.size() - 1; i > val.size() - choice - 1; i--) {
                     cout << rankTwo << ". " << val[i].first << " " << val[i].second << endl;
@@ -459,7 +491,7 @@ int main() {
             break;
         }
         case 3: {
-            cout << "Which country would you like to search? Input country abbreviations" << endl;
+            cout << "Which country would you like to search?";
             string country;
             cin >> country;
             val = GetRegionMovieRatings(country);
@@ -470,12 +502,20 @@ int main() {
             auto beginR = std::chrono::high_resolution_clock::now();
             radixSort(val);
             auto endR = std::chrono::high_resolution_clock::now();
-            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
-            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
-            cout << "Input 1 for all ratings and 2 for select number" << endl;
+            elapsedQ = std::chrono::duration_cast<std::chrono::milliseconds>((endQ - beginQ)).count();
+            elapsedR = std::chrono::duration_cast<std::chrono::milliseconds>((endR - beginR)).count();
+            cout << endl;
+            cout << "1. Output all ratings" << endl;
+            cout << "2. Output select number" << endl;
+            cout << endl;
+            cout << "Input number: ";
             cin >> either;
+            cout << endl;
+            cout << endl;
             int rankThree;
             if (either == 1) {
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankThree = 1;
                 for (int i = val.size() - 1; i >= 0; i--) {
                     cout << rankThree << ". " << val[i].first << " " << val[i].second << endl;
@@ -483,8 +523,11 @@ int main() {
                 }
             }
             else {
-                cout << "How many movies do you want to see? (1 - 100)" << endl;
+                cout << "How many movies do you want to see? (1 - 100)";
                 cin >> choice;
+                cout << endl;
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankThree = 1;
                 for (int i = val.size() - 1; i > val.size() - choice - 1; i--) {
                     cout << rankThree << ". " << val[i].first << " " << val[i].second << endl;
@@ -495,15 +538,23 @@ int main() {
         }
         /*
         case 4: {
-            cout << "Which year would you like to search?" << endl;
+            cout << "Which year would you like to search?";
             int year;
             cin >> year;
             vector<pair<string, float>> valFour =
             radixSort(valFour);
-            cout << "Input 1 for all ratings and 2 for select number" << endl;
+            cout << endl;
+            cout << "1. Output all ratings" << endl;
+            cout << "2. Output select number" << endl;
+            cout << endl;
+            cout << "Input number: ";
             cin >> either;
+            cout << endl;
+            cout << endl;
             int rankFour;
             if (either == 1) {
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankFour = 1;
                 for (int i = valFour.size() - 1; i >= 0; i--) {
                     cout << rankFour << ". " << valFour[i].first << " " << valFour[i].second << endl;
@@ -511,8 +562,11 @@ int main() {
                 }
             }
             else {
-                cout << "How many movies do you want to see? (1 - 100)" << endl;
+                cout << "How many movies do you want to see? (1 - 100)";
                 cin >> choice;
+                cout << endl;
+                cout << "--------------------- Your  Ratings --------------------" << endl;
+                cout << endl;
                 rankFour = 1;
                 for (int i = valFour.size() - 1; i > valFour.size() - choice - 1; i--) {
                     cout << rankFour << ". " << valFour[i].first << " " << valFour[i].second << endl;
@@ -525,10 +579,11 @@ int main() {
 
     cout << endl;
     cout << endl;
-    cout << "Perfomance: " << endl;
+    cout << "---------------------- Perfomance ----------------------" << endl;
+    cout << endl;
     cout << "Number of data points: " << val.size() << endl;
-    cout << "Quick Sort: " << elapsedQ << " us" << endl;
-    cout << "Radix Sort: " << elapsedR << " us" << endl;
+    cout << "Quick Sort: " << elapsedQ << " ms" << endl;
+    cout << "Radix Sort: " << elapsedR << " ms" << endl;
 
 
     return 0;
