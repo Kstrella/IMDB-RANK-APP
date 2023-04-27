@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include <chrono>
 using namespace std;
-using namespace std::chrono;
 
 int partition(vector<float>& arr, float low, float high);
 void quickSort(vector<float>& arr, float low, float high);
@@ -404,14 +403,14 @@ int main() {
             std::getline(std::cin, actor);
             val = GetActorMovieRatings(actor);
             valTwo = val;
-            auto beginQ = high_resolution_clock::now();
+            auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
-            auto endQ = high_resolution_clock::now();
-            auto beginR = high_resolution_clock::now();
+            auto endQ = std::chrono::steady_clock::now();
+            auto beginR = std::chrono::steady_clock::now();
             radixSort(val);
-            auto endR = high_resolution_clock::now();
-            elapsedQ = duration_cast<microseconds>((endQ - beginQ)).count();
-            elapsedR = duration_cast<microseconds>((endR - beginR)).count();
+            auto endR = std::chrono::steady_clock::now();
+            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
+            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
             cout << endl;
             cout << "1. Output all ratings" << endl;
             cout << "2. Output select number" << endl;
@@ -450,14 +449,14 @@ int main() {
             cin >> names;
             val = GetGenreMovieRatings(names);
             valTwo = val;
-            auto beginQ = std::chrono::high_resolution_clock::now();
+            auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
-            auto endQ = std::chrono::high_resolution_clock::now();
-            auto beginR = std::chrono::high_resolution_clock::now();
+            auto endQ = std::chrono::steady_clock::now();
+            auto beginR = std::chrono::steady_clock::now();
             radixSort(val);
-            auto endR = std::chrono::high_resolution_clock::now();
-            elapsedQ = std::chrono::duration_cast<std::chrono::milliseconds>((endQ - beginQ)).count();
-            elapsedR = std::chrono::duration_cast<std::chrono::milliseconds>((endR - beginR)).count();
+            auto endR = std::chrono::steady_clock::now();
+            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
+            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
             cout << endl;
             cout << "1. Output all ratings" << endl;
             cout << "2. Output select number" << endl;
@@ -496,14 +495,14 @@ int main() {
             cin >> country;
             val = GetRegionMovieRatings(country);
             valTwo = val;
-            auto beginQ = std::chrono::high_resolution_clock::now();
+            auto beginQ = std::chrono::steady_clock::now();
             quickSort(valTwo, 0, val.size() - 1);
-            auto endQ = std::chrono::high_resolution_clock::now();
-            auto beginR = std::chrono::high_resolution_clock::now();
+            auto endQ = std::chrono::steady_clock::now();
+            auto beginR = std::chrono::steady_clock::now();
             radixSort(val);
-            auto endR = std::chrono::high_resolution_clock::now();
-            elapsedQ = std::chrono::duration_cast<std::chrono::milliseconds>((endQ - beginQ)).count();
-            elapsedR = std::chrono::duration_cast<std::chrono::milliseconds>((endR - beginR)).count();
+            auto endR = std::chrono::steady_clock::now();
+            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
+            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
             cout << endl;
             cout << "1. Output all ratings" << endl;
             cout << "2. Output select number" << endl;
@@ -543,7 +542,15 @@ int main() {
             cin >> year;
             vector<pair<string, float>> valFour =
             radixSort(valFour);
-            cout << endl;
+            valTwo = val;
+            auto beginQ = std::chrono::steady_clock::now();
+            quickSort(valTwo, 0, val.size() - 1);
+            auto endQ = std::chrono::steady_clock::now();
+            auto beginR = std::chrono::steady_clock::now();
+            radixSort(val);
+            auto endR = std::chrono::steady_clock::now();
+            elapsedQ = std::chrono::duration_cast<std::chrono::microseconds>((endQ - beginQ)).count();
+            elapsedR = std::chrono::duration_cast<std::chrono::microseconds>((endR - beginR)).count();
             cout << "1. Output all ratings" << endl;
             cout << "2. Output select number" << endl;
             cout << endl;
@@ -582,8 +589,13 @@ int main() {
     cout << "---------------------- Perfomance ----------------------" << endl;
     cout << endl;
     cout << "Number of data points: " << val.size() << endl;
-    cout << "Quick Sort: " << elapsedQ << " ms" << endl;
-    cout << "Radix Sort: " << elapsedR << " ms" << endl;
+    cout << "Quick Sort: " << elapsedQ << " microseconds" << endl;
+    cout << "Radix Sort: " << elapsedR << " microseconds" << endl;
+    float ratio = float(elapsedQ) / float(elapsedR);
+    if (ratio > 1)
+        cout << "Radix sort is faster than Qucik sort by a factor of " << ratio << endl;
+    else
+        cout << "Quick sort is faster that Radix sort by a factor of " << 1.0 / ratio << endl;
 
 
     return 0;
