@@ -9,6 +9,9 @@
 #include <chrono>
 using namespace std;
 
+
+
+// FUNCTION DECLARATIONS
 int partition(vector<float>& arr, float low, float high);
 void quickSort(vector<float>& arr, float low, float high);
 void radixSort(vector<pair<string,float>>& test);
@@ -26,7 +29,7 @@ vector<pair<string, float>> GetYearMovieRatings(int year, int votes);
 unordered_set<string> GetMovieIDByYear(int year, int votes);
 
 
-
+// SORTING ALGORITHMS
 int partition(vector<pair<string,float>>& arr, float low, float high) {
     float pivot = arr[low].second;
     float up = low;
@@ -64,9 +67,6 @@ void quickSort(vector<pair<string,float>>& arr, float low, float high) {
         quickSort(arr, pivot + 1.0f, high);
     }
 }
-
-
-
 void radixSort(vector<pair<string,float>>& test) {
     vector<pair<string,int>> curr;
     for (int i = 0; i < test.size(); i++) {
@@ -95,8 +95,12 @@ void radixSort(vector<pair<string,float>>& test) {
 }
 
 
-
+// FILE PARSING
 string GetActorID(string actorName) {
+    /*
+    Given an actor name, get their ID from the IMDB files    
+    */
+
     // Variables
     ifstream inputData("name_basics.tsv");
     string stringToParse;
@@ -127,6 +131,11 @@ string GetActorID(string actorName) {
 
 unordered_set<string> GetMovieIDsByActor(string actorName)
 {
+    /*
+    Given an actor name, returns movie IDs from IMDB files
+    */
+
+    // Obtain actor ID from given actor name
     string actorID = GetActorID(actorName);
 
     // Variables
@@ -160,6 +169,10 @@ unordered_set<string> GetMovieIDsByActor(string actorName)
 
 vector<vector<string>> GetMovieDataByMovieIDs(unordered_set<string>& movieIDMap)
 {
+    /*
+    Given movie IDs, return movie data of that movie (ID, title, and genres)
+    */
+
     vector<vector<string>> movieData = GetAllMovieData();
     vector<vector<string>> outputVector;
     for (vector<string> vec : movieData) {
@@ -173,13 +186,13 @@ vector<vector<string>> GetMovieDataByMovieIDs(unordered_set<string>& movieIDMap)
 
 vector<vector<string>> GetAllMovieData()
 {
-/*
-Parses data.tsv from IMDB's 'title.basics.tsv' and returns a vector of vector of strings.
-Only data from movies is considered.
-0: Movie ID
-1: Movie Title
-2-4: Up to 3 applicable genres (if no genres available, 2 will be "\\N")
-*/
+    /*
+    Parses data.tsv from IMDB's 'title.basics.tsv' and returns a vector of vector of strings.
+    Only data from movies is considered.
+    0: Movie ID
+    1: Movie Title
+    2-4: Up to 3 applicable genres (if no genres available, 2 will be "\\N")
+    */
 
     // Variables
     ifstream inputData("title_basics.tsv");
@@ -235,6 +248,11 @@ Only data from movies is considered.
 
 vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieData, int votes)
 {
+    /*
+    Used to pair requested movies with their respective ratings.
+    Can also filter out movies by a minimum vote count threshold.
+    */
+
     vector<pair<string, float>> outputVector;
     ifstream inputData("ratings.tsv");
     unordered_map<string, float> ratingMap;
@@ -290,6 +308,9 @@ vector<pair<string, float>> PairMoviesAndRatings(vector<vector<string>>& movieDa
 
 vector<vector<string>> GetMovieDataByGenre(string genre)
 {
+    /*
+    Given a genre string, returns movie data whose genres match
+    */
     vector<vector<string>> movieData = GetAllMovieData();
     vector<vector<string>> outputVector;
     for (vector<string> vec : movieData) {
@@ -302,6 +323,11 @@ vector<vector<string>> GetMovieDataByGenre(string genre)
 
 unordered_set<string> GetMovieIDsByRegion(string region)
 {
+    /*
+    Given a two-letter code for a region, return movie IDs corresponding to that region.
+    Includes localized movies.
+    */
+
     // Variables
     ifstream inputData("title_akas.tsv");
     unordered_set<string> outputSet;
@@ -335,7 +361,12 @@ unordered_set<string> GetMovieIDsByRegion(string region)
     return outputSet;
 }
 
-unordered_set<string> GetMovieIDByYear(int year) {
+unordered_set<string> GetMovieIDByYear(int year) 
+{
+    /*
+    Given a year integer, returns the IDs of movies that were released in that year.
+    */
+
     // Variables
     ifstream inputData("title_basics.tsv");
     unordered_set<string> outputSet;
@@ -379,6 +410,10 @@ unordered_set<string> GetMovieIDByYear(int year) {
 
 vector<pair<string,float>> GetActorMovieRatings(string actor, int votes)
 {
+    /*
+    Produces movie and ratings that involve a specified actor.
+    */
+
     vector<pair<string, float>> outputVector;
     unordered_set<string> actorMap = GetMovieIDsByActor(actor);
     if (actorMap.size() != 0) {
@@ -394,6 +429,10 @@ vector<pair<string,float>> GetActorMovieRatings(string actor, int votes)
 
 vector<pair<string,float>> GetGenreMovieRatings(string genre, int votes)
 {
+    /*
+    Produces movies and ratings that are within a specific genre.
+    */
+
     vector<pair<string, float>> outputVector;
     vector<vector<string>> genreVector = GetMovieDataByGenre(genre);
     if (genreVector.size() != 0) {
@@ -408,6 +447,9 @@ vector<pair<string,float>> GetGenreMovieRatings(string genre, int votes)
 
 vector<pair<string, float>> GetRegionMovieRatings(string region, int votes)
 {
+    /*
+    Produces movies and ratings that are released in a certain region.
+    */
     // Regions are 2 letter IDs (i.e. Germany = GR)
     vector<pair<string, float>> outputVector;
     unordered_set<string> regionMap = GetMovieIDsByRegion(region);
@@ -422,8 +464,11 @@ vector<pair<string, float>> GetRegionMovieRatings(string region, int votes)
     return outputVector;
 }
 
-vector<pair<string, float>> GetYearMovieRatings(int year, int votes) {
-    // Yep years
+vector<pair<string, float>> GetYearMovieRatings(int year, int votes) 
+{
+    /*
+    Produces movies and ratings from a specified year.
+    */
     vector<pair<string, float>> outputVector;
     unordered_set<string> regionMap = GetMovieIDByYear(year);
     if (regionMap.size() != 0) {
@@ -439,7 +484,7 @@ vector<pair<string, float>> GetYearMovieRatings(int year, int votes) {
 
 
 
-
+// MAIN
 int main() {
 
     int choice;
